@@ -19,7 +19,8 @@ body {
     background: #ffffff;
     border-radius: 10px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-    overflow: hidden;
+    overflow: visible;
+    margin-bottom: 50px;
 }
 
 #gameCanvas {
@@ -163,6 +164,26 @@ button:active {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+.game-footer {
+    position: absolute;
+    bottom: -40px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.game-footer p {
+    margin: 0;
+    font-size: 12px;
+    color: #666;
+    font-weight: 500;
+}
+
 /* Responsive design */
 @media (max-width: 480px) {
     .game-container {
@@ -214,5 +235,9 @@ button:active {
     .game-over-bird-img {
         width: 60px;
         height: 60px;
+    }
+    
+    .game-footer p {
+        font-size: 11px;
     }
 }
