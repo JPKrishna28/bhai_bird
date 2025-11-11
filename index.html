@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <canvas id="gameCanvas" width="400" height="600"></canvas>
+        <audio id="backgroundMusic" loop preload="auto">
+            <source src="background-music.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+        <audio id="gameOverSound" preload="auto">
+            <source src="gameover-sound.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+        <div class="ui">
+            <div class="score">Score: <span id="score">0</span></div>
+            <div class="high-score">High Score: <span id="highScore">0</span></div>
+            <button class="audio-toggle" id="audioToggle">🔊</button>
+            <div class="game-over" id="gameOver">
+                <div class="game-over-bird">
+                    <img src="bird.jpg" alt="Game Over Bird" class="game-over-bird-img">
+                </div>
+                <h2>Game Over!</h2>
+                <p>Final Score: <span id="finalScore">0</span></p>
+                <button id="restartBtn">Play Again</button>
+            </div>
+            <div class="start-screen" id="startScreen">
+                <h1>Flappy Bird</h1>
+                <p>Press SPACE or click to flap!</p>
+                <button id="startBtn">Start Game</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
