@@ -333,12 +333,15 @@ function gameOver() {
 function gameLoop(now) {
     if (gameState !== 'playing') return;
 
-    // Compute time scale from real elapsed time. First frame (lastTime 0) and
-    // any long stall (tab switch) are clamped so physics never jumps.
+    // `now` is undefined on the very first call (invoked directly, not by rAF).
+    if (now === undefined) now = performance.now();
+
+    // Compute time scale from real elapsed time. First frame and any long
+    // stall (tab switch) are clamped so physics never jumps.
     if (!lastTime) lastTime = now;
     const deltaMs = now - lastTime;
     lastTime = now;
-    timeScale = Math.min(deltaMs / (1000 / REFERENCE_FPS), 2);
+    timeScale = Math.min(deltaMs / (1000 / REFERENCE_FPS), 2) || 1;
 
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
