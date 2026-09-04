@@ -200,12 +200,14 @@ button:active {
     }
     
     #gameCanvas {
-        width: auto;
+        width: 100%;
         height: auto;
-        max-width: 100vw;
-        max-height: 85vh;
-        /* Preserve the 400:600 aspect ratio while fitting the viewport. */
-        aspect-ratio: 400 / 600;
+        max-width: 400px;
+    }
+
+    .game-container {
+        width: 100%;
+        max-width: 400px;
     }
     
     .score, .high-score {
