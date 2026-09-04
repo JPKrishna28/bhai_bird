@@ -21,6 +21,8 @@ let score = 0;
 let highScore = localStorage.getItem('flappyBirdHighScore') || 0;
 
 // Game objects
+// Physics tuned for a 60 FPS reference frame, then scaled by delta time so the
+// bird falls at the same real-world speed on 60Hz, 90Hz and 120Hz displays.
 const bird = {
     x: 50,
     y: canvas.height / 2,
@@ -39,7 +41,13 @@ const pipeSpeed = 2;
 
 // Game settings
 let frameCount = 0;
-const pipeSpawnRate = 120; // frames between pipes
+const pipeSpawnRate = 120; // frames between pipes (at 60 FPS reference)
+
+// Frame-rate independence: multiply per-frame motion by this factor.
+const REFERENCE_FPS = 60;
+let lastTime = 0;
+let timeScale = 1;
+let spawnTimer = 0; // accumulates scaled frames for pipe spawning
 
 // UI elements
 const scoreElement = document.getElementById('score');
@@ -67,6 +75,20 @@ document.addEventListener('keydown', (e) => {
 });
 
 canvas.addEventListener('click', handleInput);
+
+// Mobile: touchstart fires immediately, unlike the delayed synthetic click.
+canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    handleInput();
+}, { passive: false });
+
+// Let taps anywhere on the game flap too (buttons still work via their own handlers).
+document.addEventListener('touchstart', (e) => {
+    if (gameState === 'playing' && !e.target.closest('button')) {
+        e.preventDefault();
+        handleInput();
+    }
+}, { passive: false });
 
 function handleInput() {
     if (gameState === 'playing') {
@@ -126,6 +148,9 @@ function resetGame() {
     pipes.length = 0;
     score = 0;
     frameCount = 0;
+    spawnTimer = 0;
+    lastTime = 0;
+    timeScale = 1;
     scoreElement.textContent = score;
 }
 
@@ -143,9 +168,9 @@ function createPipe() {
 }
 
 function updateBird() {
-    bird.velocity += bird.gravity;
-    bird.y += bird.velocity;
-    
+    bird.velocity += bird.gravity * timeScale;
+    bird.y += bird.velocity * timeScale;
+
     // Check boundaries
     if (bird.y < 0 || bird.y + bird.height > canvas.height) {
         gameOver();
@@ -153,15 +178,18 @@ function updateBird() {
 }
 
 function updatePipes() {
-    // Create new pipes
-    if (frameCount % pipeSpawnRate === 0) {
+    // Create new pipes (spawnTimer counts scaled frames so spacing is
+    // consistent regardless of display refresh rate).
+    spawnTimer += timeScale;
+    if (spawnTimer >= pipeSpawnRate) {
+        spawnTimer -= pipeSpawnRate;
         createPipe();
     }
-    
+
     // Update existing pipes
     for (let i = pipes.length - 1; i >= 0; i--) {
         const pipe = pipes[i];
-        pipe.x -= pipeSpeed;
+        pipe.x -= pipeSpeed * timeScale;
         
         // Remove pipes that are off screen
         if (pipe.x + pipeWidth < 0) {
@@ -302,23 +330,30 @@ function gameOver() {
     gameOverScreen.style.display = 'block';
 }
 
-function gameLoop() {
+function gameLoop(now) {
     if (gameState !== 'playing') return;
-    
+
+    // Compute time scale from real elapsed time. First frame (lastTime 0) and
+    // any long stall (tab switch) are clamped so physics never jumps.
+    if (!lastTime) lastTime = now;
+    const deltaMs = now - lastTime;
+    lastTime = now;
+    timeScale = Math.min(deltaMs / (1000 / REFERENCE_FPS), 2);
+
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
+
     // Draw background
     drawBackground();
-    
+
     // Update game objects
     updateBird();
     updatePipes();
-    
+
     // Draw game objects
     drawBird();
     drawPipes();
-    
+
     frameCount++;
     requestAnimationFrame(gameLoop);
 }

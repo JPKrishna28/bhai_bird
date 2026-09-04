@@ -12,6 +12,15 @@ body {
     align-items: center;
     min-height: 100vh;
     overflow: hidden;
+    /* Stop the browser hijacking taps for scroll / pinch-zoom / double-tap. */
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#gameCanvas {
+    touch-action: none;
 }
 
 .game-container {
@@ -191,9 +200,12 @@ button:active {
     }
     
     #gameCanvas {
-        width: 100%;
+        width: auto;
         height: auto;
-        max-width: 400px;
+        max-width: 100vw;
+        max-height: 85vh;
+        /* Preserve the 400:600 aspect ratio while fitting the viewport. */
+        aspect-ratio: 400 / 600;
     }
     
     .score, .high-score {
